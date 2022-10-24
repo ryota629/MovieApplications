@@ -4,87 +4,154 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
 import Card from "@mui/material/Card";
-import Button  from "@mui/material/Button";
-import { useState,useEffect} from 'react';
+import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
-import {tmdb_api} from '../service/api';
-import {requests} from '../service/request';
-
+import { tmdb_api } from "../service/api";
+import { requests } from "../service/request";
+import Rating from "@mui/material/Rating";
+import Stack from "@mui/material/Stack";
+import { makeStyles } from "@material-ui/core/styles";
 
 type Props = {
-  datas:any;
-  check:boolean;
-}
+  datas: any;
+  check: boolean;
+};
 
-const base_url:string= "https://image.tmdb.org/t/p/w185/";
+const useStyles = makeStyles((theme) => ({
+  cardcontents: {
+    paddingTop: "0px",
+  },
+  cardtext: {
+    width: 140,
+    height: 30,
+  },
+}));
 
-export const SearchRow = ({datas,check}:Props) => {
-  const [overview,setOverView] = useState([]);
-  const [credits,setCredit] = useState([]);
-    const data_id =  datas[0]?.id;
-      useEffect(() => {
-          const fetchUrl= requests.feactOverview;
-          async function fetchData(){ 
-          const request = await tmdb_api.get(`/movie/${data_id}?${fetchUrl}`);
-          setOverView(request.data.overview);
-          return request;
-          }
-        fetchData();
+const base_url: string = "https://image.tmdb.org/t/p/w185/";
 
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      },[check]);
-    
-      useEffect(()=>{
-        const fetchUrl= requests.feactCredit;
-        async function fetchData(){
-          const request = await tmdb_api.get(`/movie/${data_id}/${fetchUrl}`);
-          setCredit(request.data.cast[0].name);
-          return request;
-        }
-        fetchData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      },[check]);
+export const SearchRow = ({ datas, check }: Props) => {
+  const fetchUrlOverview = requests.feactOverview;
+  const fetchUrlCast = requests.feactCredit;
+
   const navigate = useNavigate();
-  const SubmitItem = () => {
-    navigate('/searchmovie/editmovie',{state:{datas,overview,credits}});
-  } 
-  const SubmitNextItem = () => {
-    navigate('/searchmovie/editnextmovie',{state:{datas,overview,credits}});
-  } 
-  
+  const classes = useStyles();
+
+  const title = (i: number) => {
+    const wordCount = 21;
+    const titleCount = datas[i].title.length;
+    const clamp = "...";
+    let title = datas[i].title;
+    if (titleCount > wordCount) {
+      var str = datas[i].title;
+      str = str.substr(0, wordCount - 1);
+      title = str + clamp;
+    }
+    return title;
+  };
+
+  const SubmitItem = async (i: any) => {
+    const data_id = datas[i]?.id;
+    const requestoverview = await tmdb_api.get(
+      `/movie/${data_id}?${fetchUrlOverview}`
+    );
+    const requestcast = await tmdb_api.get(`/movie/${data_id}/${fetchUrlCast}`);
+    const dataItem = datas[i];
+    const overview = requestoverview.data.overview;
+
+    const credits_data = requestcast.data;
+    const cast_length: number = requestcast.data.cast.length;
+
+    let array: Array<string> = new Array(cast_length);
+    for (let i = 0; i < cast_length; i++) {
+      array[i] = credits_data.cast[i].name;
+    }
+    const cast = array.join();
+
+    navigate("/searchmovie/editmovie", { state: { dataItem, overview, cast } });
+  };
+  const SubmitNextItem = async (i: any) => {
+    const data_id = datas[i]?.id;
+    const requestoverview = await tmdb_api.get(
+      `/movie/${data_id}?${fetchUrlOverview}`
+    );
+    const requestcast = await tmdb_api.get(`/movie/${data_id}/${fetchUrlCast}`);
+    const dataItem = datas[i];
+    const overview = requestoverview.data.overview;
+    const credits = requestcast.data.cast[i].name;
+    navigate("/searchmovie/editnextmovie", {
+      state: { dataItem, overview, credits },
+    });
+  };
+
   return (
     <div className="Row">
       <Grid
-      container
-      direction="row"
-      justifyContent="center"
-      alignItems="center"
-      margin="20px"
-    >
-      <Grid container spacing={2}>
-        {datas.map((movie:any,i:number) => (
-        <Grid item xs={2} key={i}>
-          <Card sx={{ maxWidth: 300, height: 450 }}>
-            <CardActionArea>
-              <CardMedia component="img" height="250" image={`${base_url}${movie.poster_path}`} alt="" />
-              <CardContent sx={{paddingTop:"5px"}} >
-                <Typography gutterBottom variant="h6" component="div">
-                {movie.title}
-                </Typography>
-                <Typography>
-                 評価:{Math.round(movie.vote_average / 2  * 10) / 10}
-                </Typography>
-              </CardContent>
-              <Button variant="contained" color="primary" sx={{display:"block",margin:"auto"}} onClick={SubmitItem} >既に観た登録</Button>
-              <Button variant="contained" color="primary" sx={{display:"block",margin:"auto"}} onClick={SubmitNextItem} >次観たい登録</Button>
-            </CardActionArea>
-          </Card> 
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+        margin="40px"
+      >
+        <Grid container spacing={2}>
+          {datas.map((movie: any, i: number) => (
+            <Grid item xs={2} key={i}>
+              <Card sx={{ maxWidth: 300, height: 450 }}>
+                <CardActionArea>
+                  <CardMedia
+                    component="img"
+                    height="250"
+                    image={`${base_url}${movie.poster_path}`}
+                    alt=""
+                  />
+                  <CardContent>
+                    <Typography
+                      className={classes.cardtext}
+                      gutterBottom
+                      variant="subtitle1"
+                      component="div"
+                    >
+                      {title(i)}
+                    </Typography>
+                  </CardContent>
+                  <CardContent
+                    sx={{ paddingTop: 0, paddinBottom: 0, padinngRight: 0 }}
+                  >
+                    <Stack spacing={1}>
+                      <Rating
+                        name="review"
+                        defaultValue={
+                          Math.round((movie.vote_average / 2) * 10) / 10
+                        }
+                        precision={0.1}
+                        readOnly
+                      />
+                      評価:{Math.round((movie.vote_average / 2) * 10) / 10}
+                    </Stack>
+                  </CardContent>
+                </CardActionArea>
+                <div style={{ textAlign: "center" }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ marginBottom: "3px" }}
+                    onClick={() => SubmitItem(i)}
+                  >
+                    既に観た登録
+                  </Button>
+                  <br />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => SubmitNextItem(i)}
+                  >
+                    次観たい登録
+                  </Button>
+                </div>
+              </Card>
+            </Grid>
+          ))}
         </Grid>
-        ))}
       </Grid>
-    </Grid>
-    
-  </div>
-
-  )
-}
+    </div>
+  );
+};

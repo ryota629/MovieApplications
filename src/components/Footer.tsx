@@ -6,10 +6,10 @@ const useStyles = makeStyles({
     backgroundColor: "#000000",
     width: "100%",
     position: "absolute",
-    bottom:"0px",
-    height:"20px",
-    verticalAlign:"middle",
-    textAlign:"center",
+    bottom: "0px",
+    height: "20px",
+    verticalAlign: "middle",
+    textAlign: "center",
   },
 });
 
