@@ -8,91 +8,62 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
 import CardMedia from "@mui/material/CardMedia";
-import { useNavigate, useLocation } from "react-router-dom";
-import { format } from "date-fns";
-import { ja } from "date-fns/locale";
-import { useState } from "react";
-import Button from "@mui/material/Button";
-import { PutMovied } from "../service/api";
-import { PutNextMovied } from "../service/api";
-import Input from "@mui/material/Input";
-import { PostMovied } from "../service/api";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
-import InputLabel from "@mui/material/InputLabel";
-import { hover } from "@testing-library/user-event/dist/hover";
+import { styled } from "@mui/material/styles";
+import Button from "@mui/material/Button";
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { PutMovied } from "../service/api";
+import { PutNextMovied } from "../service/api";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "800px",
-    height: "550px",
-    margin: "auto",
-    overflowX: "auto",
+//css style
+const PaperMain = styled(Paper)`
+  width: 800px;
+  height: 650px;
+  margin: auto;
+  overflow-x: auto;
+`;
+
+const RatingField: { [key: string]: any } = {
+  width: "100%",
+  height: 48,
+  border: "solid",
+  borderRadius: "5px",
+  borderWidth: "thin",
+  borderColor: "#C0C0C0",
+  position: "relative",
+  marginTop: "15px",
+  "&:hover": {
+    borderColor: "#000000",
   },
-  table: {
-    minWidth: 650,
-  },
-  selectTableCell: {
-    width: 60,
-  },
-  tableCell: {
-    width: 230,
-    height: 10,
-  },
-  tableCell1: {
-    width: 300,
-  },
-  tableCellDetail: {
-    width: 230,
-    height: 150,
-  },
-  tableCellComent: {
-    width: 230,
-    height: 150,
-  },
-  input: {
-    width: 230,
-    height: 80,
-  },
-  field: {
-    width: "100%",
-    height: 48,
-    border: "solid",
-    borderRadius: "5px",
-    borderWidth: "thin",
-    borderColor: "#C0C0C0",
-    position: "relative",
-    marginTop: "15px",
-    "&:hover": {
-      borderColor: "#000000",
-    },
-  },
-  fieldlable: {
-    background: "#fff",
-    padding: "3px 10px",
-    color: "#666666",
-    position: "absolute",
-    top: "-15px",
-    left: "5px",
-  },
-  reviewIcon: {
-    textAlign: "center",
-    padding: "15px 10px",
-  },
-  buttons: {
-    textAlign: "center",
-    margin: "20px auto",
-    paddingBottom: "10px",
-  },
-}));
+};
+
+const RatingLable: { [key: string]: any } = {
+  background: "#fff",
+  padding: "3px 10px",
+  color: "#666666",
+  position: "absolute",
+  top: "-15px",
+  left: "5px",
+};
+
+const RatingIcon: { [key: string]: any } = {
+  textAlign: "center",
+  padding: "15px 10px",
+};
+
+const buttons: { [key: string]: any } = {
+  textAlign: "center",
+  margin: "20px auto",
+  paddingBottom: "10px",
+};
 
 const EditWatched = () => {
-  // const base_url: string = "https://image.tmdb.org/t/p/w185/";
-  const classes = useStyles();
   const location = useLocation();
   const navigate = useNavigate();
   const movie = location.state.moviereg;
-  const movdlUrl = location.state.movdlUrl;
+  const moviedUrl = location.state.moviedlUrl;
 
   const initialValues = {
     id: movie.id,
@@ -113,12 +84,12 @@ const EditWatched = () => {
   };
 
   const onSubmit = async () => {
-    if (movdlUrl === "watchedlist") {
+    if (moviedUrl === "watchedlist") {
       await PutMovied(moviedreg, moviedreg.id);
       navigate("/watchedlist");
     }
 
-    if (movdlUrl === "nextwatchedlist") {
+    if (moviedUrl === "nextwatchedlist") {
       await PutNextMovied(moviedreg, moviedreg.id);
       navigate("/nextwatchedlist");
     }
@@ -127,13 +98,13 @@ const EditWatched = () => {
   return (
     <div>
       <h1 style={{ textAlign: "center" }}>
-        {movdlUrl === "watchedlist" ? "観た映画一覧編集" : "次観たい一覧編集"}
+        {moviedUrl === "watchedlist" ? "観た映画一覧編集" : "次観たい一覧編集"}
       </h1>
-      <Paper className={classes.root}>
-        <Table className={classes.table}>
+      <PaperMain>
+        <Table>
           <TableBody>
             <TableRow>
-              <TableCell className={classes.tableCell1}>
+              <TableCell sx={{ width: 300 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={6} md={8}>
                     <Card sx={{ width: 290, height: 480 }}>
@@ -180,9 +151,9 @@ const EditWatched = () => {
                   defaultValue={movie.releasedate}
                 />
 
-                <div className={classes.field}>
-                  <span className={classes.fieldlable}>評価</span>
-                  <div className={classes.reviewIcon}>
+                <div style={RatingField}>
+                  <span style={RatingLable}>評価</span>
+                  <div style={RatingIcon}>
                     <Stack spacing={1}>
                       <Rating
                         name="review"
@@ -229,8 +200,8 @@ const EditWatched = () => {
             </TableRow>
           </TableBody>
         </Table>
-      </Paper>
-      <div className={classes.buttons}>
+      </PaperMain>
+      <div style={buttons}>
         <Button variant="contained" size="small" onClick={() => onSubmit()}>
           登録する
         </Button>

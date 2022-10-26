@@ -69,7 +69,7 @@ const MoviedDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const movie = location.state.movies;
-  const movdlUrl = location.state.detailurl;
+  const moviedlUrl = location.state.detailurl;
 
   const initialValues = {
     id: movie.id,
@@ -90,23 +90,23 @@ const MoviedDetail = () => {
   };
 
   const onSubmit = async () => {
-    if (movdlUrl === "watchedlist") {
+    if (moviedlUrl === "watchedlist") {
       //await PutMovied(moviereg);
       navigate("/watchedlist/moviedetail/editwatched", {
-        state: { moviereg, movdlUrl },
+        state: { moviereg, moviedlUrl },
       });
     }
 
-    if (movdlUrl === "nextwatchedlist") {
+    if (moviedlUrl === "nextwatchedlist") {
       //await PutNextMovied(moviereg);
       navigate("/nextwatchedlist/moviedetail/editwatched", {
-        state: { moviereg, movdlUrl },
+        state: { moviereg, moviedlUrl },
       });
     }
   };
   return (
     <div>
-      {movdlUrl === "watchedlist" ? (
+      {moviedlUrl === "watchedlist" ? (
         <h1 style={{ textAlign: "center" }}>観た映画一覧詳細</h1>
       ) : (
         <h1 style={{ textAlign: "center" }}>次観たい映画一覧詳細</h1>

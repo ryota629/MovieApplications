@@ -12,6 +12,7 @@ import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
 
+
 type Props = {
   datas: any;
   check: boolean;
@@ -32,6 +33,7 @@ const base_url: string = "https://image.tmdb.org/t/p/w185/";
 export const SearchRow = ({ datas, check }: Props) => {
   const fetchUrlOverview = requests.feactOverview;
   const fetchUrlCast = requests.feactCredit;
+  // let urlEdit = "";
 
   const navigate = useNavigate();
   const classes = useStyles();
@@ -49,7 +51,7 @@ export const SearchRow = ({ datas, check }: Props) => {
     return title;
   };
 
-  const SubmitItem = async (i: any) => {
+  const SubmitItem = async (i: any,editUrl:string) => {
     const data_id = datas[i]?.id;
     const requestoverview = await tmdb_api.get(
       `/movie/${data_id}?${fetchUrlOverview}`
@@ -66,21 +68,12 @@ export const SearchRow = ({ datas, check }: Props) => {
       array[i] = credits_data.cast[i].name;
     }
     const cast = array.join();
-
-    navigate("/searchmovie/editmovie", { state: { dataItem, overview, cast } });
-  };
-  const SubmitNextItem = async (i: any) => {
-    const data_id = datas[i]?.id;
-    const requestoverview = await tmdb_api.get(
-      `/movie/${data_id}?${fetchUrlOverview}`
-    );
-    const requestcast = await tmdb_api.get(`/movie/${data_id}/${fetchUrlCast}`);
-    const dataItem = datas[i];
-    const overview = requestoverview.data.overview;
-    const credits = requestcast.data.cast[i].name;
-    navigate("/searchmovie/editnextmovie", {
-      state: { dataItem, overview, credits },
-    });
+    if(editUrl ===  "editmovie"){
+      navigate("/searchmovie/editmovie", { state: { dataItem, overview, cast, editUrl } });
+    }
+     if(editUrl ===  "editnextmovie"){
+      navigate("/searchmovie/editnextmovie", {state: { dataItem, overview, cast,editUrl }});
+    }
   };
 
   return (
@@ -134,7 +127,7 @@ export const SearchRow = ({ datas, check }: Props) => {
                     variant="contained"
                     color="primary"
                     sx={{ marginBottom: "3px" }}
-                    onClick={() => SubmitItem(i)}
+                    onClick={() => SubmitItem(i,"editmovie")}
                   >
                     既に観た登録
                   </Button>
@@ -142,7 +135,7 @@ export const SearchRow = ({ datas, check }: Props) => {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => SubmitNextItem(i)}
+                    onClick={() => SubmitItem(i,"editnextmovie")}
                   >
                     次観たい登録
                   </Button>

@@ -55,15 +55,12 @@ public class MoviedServiceImpl implements MoviedService {
 
 	@Override
 	public MoviedList putMovied(MoviedList movied) {
-		
-		this.moviedlistdao.save(movied);
-		return movied;
+		return moviedlistdao.save(movied);
 	}
 	
 	@Override
 	public NextMoviedList putNextMovied(NextMoviedList nextmovied) {
-		this.nextmoviedlistdao.save(nextmovied);
-		return nextmovied;
+		return nextmoviedlistdao.save(nextmovied);
 	}
 
 	@Override

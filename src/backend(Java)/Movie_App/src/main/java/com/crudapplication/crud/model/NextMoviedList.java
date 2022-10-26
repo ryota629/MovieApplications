@@ -7,7 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class MoviedList {
+public class NextMoviedList {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,13 +17,15 @@ public class MoviedList {
 	private String detail;
 	private String releasedate;
 	private double review;
+	@Column(name="cast",columnDefinition="LONGTEXT")
 	private String cast;
 	private String createdate;
+	@Column(name="comment",columnDefinition="LONGTEXT")
 	private String comment;
 	private String image;
 	
-	public MoviedList() {};
-	public MoviedList(long id, String title,String detail,String releasedate, double review, String cast, String createdate,String comment,String image) {
+	public NextMoviedList() {};
+	public NextMoviedList(long id, String title,String detail,String releasedate, double review, String cast, String createdate,String comment,String image) {
 		super();
 		this.id = id;
 		this.title = title;

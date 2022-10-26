@@ -50,13 +50,16 @@ public class WatchedMovieController {
 		return this.moviedService.addNextMovied(nextmovied);
 	}
 	
-	@PutMapping("/movielist/moviedetail/update")
-	public MoviedList putMoviedDetail(@RequestBody MoviedList movied) {
+	@PutMapping("/movielist/moviedetail/update/{id}")
+	public MoviedList putMoviedDetail(@PathVariable String id,@RequestBody MoviedList movied) {
+		movied.setId(Long.parseLong(id));
+		System.out.println("次映画しました");
 		return this.moviedService.putMovied(movied);
 	}
 	
-	@PutMapping("/movielist/nextmoviedetail/update")
-	public NextMoviedList putNextMoviedDetail(@RequestBody NextMoviedList nextmovied) {
+	@PutMapping("/movielist/nextmoviedetail/update/{id}")
+	public NextMoviedList putNextMoviedDetail(@PathVariable String id,@RequestBody NextMoviedList nextmovied) {
+		nextmovied.setId(Long.parseLong(id));
 		return this.moviedService.putNextMovied(nextmovied);
 	}
 	

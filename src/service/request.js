@@ -1,4 +1,4 @@
-const API_KEY = ""; //TMDBのAPI_KEY
+const API_KEY = "b688cb080282be003040a6d52d81892b"; //TMDBのAPI_KEY
 
 export const requests = {
   // feactTopRated:`/discover/movie?api_key=${API_KEY}&language=ja-JP`
