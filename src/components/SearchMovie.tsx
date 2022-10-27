@@ -2,7 +2,6 @@ import { useState } from "react";
 import { tmdb_api } from "../service/api";
 import ItemSearch from "./ItemSearch";
 import { SearchRow } from "./SearchRow";
-import { makeStyles } from "@material-ui/core/styles";
 
 type Props = {
   fetchUrl: string;
@@ -18,20 +17,10 @@ type Movie = {
   vote_average: number;
 };
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    textAlign: "center",
-  },
-}));
-
 const SearchMovie = ({ fetchUrl }: Props) => {
-  const classes = useStyles();
-
   const [keyword, setKeyword] = useState("");
-
   const [movies, setMovies] = useState<Movie[]>([]);
 
-  const [check, setCheck] = useState(false);
 
   const handleFreeWord = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
@@ -43,21 +32,20 @@ const SearchMovie = ({ fetchUrl }: Props) => {
         `${fetchUrl}&query=${keyword}&page=1&include_adult=false`
       );
       setMovies(request.data.results);
-      setCheck(true);
       return request;
     }
     fetchData();
   };
   return (
     <div>
-      <div className={classes.root}>
+      <div style={{ textAlign: "center" }}>
         <ItemSearch
           value={keyword}
           handleFreeWord={handleFreeWord}
           handleSubmit={handleSubmit}
         />
       </div>
-      <SearchRow datas={movies} check={check} />
+      <SearchRow datas={movies} />
     </div>
   );
 };

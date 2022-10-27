@@ -2,60 +2,51 @@ import Grid from "@mui/material/Grid";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { CardActionArea } from "@mui/material";
+import  CardActionArea  from "@mui/material/CardActionArea";
 import Card from "@mui/material/Card";
-import { getMovied } from "../service/api";
-import { getNextMovied } from "../service/api";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
-import { makeStyles } from "@material-ui/core/styles";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import IconButton from "@mui/material/IconButton";
-import { deleteMovied } from "../service/api";
-import { deleteNextMovied } from "../service/api";
+import { deleteWatched,deleteNextWatched} from "../service/api";
 import Tooltip from "@mui/material/Tooltip";
 import Pagination from "@mui/material/Pagination";
 import Container from "@mui/material/Container";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { getDetailMovied,getDetailNextMovied } from "../service/api";
+
+//css style
+const cardbutton: {[key:string]:any} = {
+  marginTop: "-12px",
+  textAlign: "center"
+}
 
 type Props = {
   datas: any;
   detailurl: string;
 };
 
-const useStyles = makeStyles((theme) => ({
-  cardcontents: {
-    paddingTop: "0px",
-  },
-  cardtext: {
-    width: 140,
-    height: 30,
-  },
-  cardbutton: {
-    marginTop: "-12px",
-    textAlign: "center",
-  },
-}));
-
 export const WatchedRow = ({ datas, detailurl }: Props) => {
   const navigate = useNavigate();
-  const classes = useStyles();
   let movies: any = null;
   const pageCount = Math.ceil(datas.length / 18);
   const [page, setPage] = useState(1);
   let startPage = (page - 1) * 18;
   let endPage = 18 * page;
+
   const getMovideDetail = async (id: number) => {
     let datas_id = datas[id].id;
+
     if (detailurl === "watchedlist") {
-      let response = await getMovied(datas_id);
+      let response = await getDetailMovied(datas_id);
       movies = response?.data;
       navigate("/watchedlist/moviedetail", { state: { movies, detailurl } });
     }
+
     if (detailurl === "nextwatchedlist") {
-      let response = await getNextMovied(datas_id);
+      let response = await getDetailNextMovied(datas_id);
       movies = response?.data;
       navigate("/nextwatchedlist/moviedetail", {
         state: { movies, detailurl },
@@ -66,24 +57,26 @@ export const WatchedRow = ({ datas, detailurl }: Props) => {
   const deleteItemData = async (id: number) => {
     let datas_id = datas[id].id;
     if (detailurl === "watchedlist") {
-      await deleteMovied(datas_id);
+      await deleteWatched(datas_id);
     }
     if (detailurl === "nextwatchedlist") {
-      await deleteNextMovied(datas_id);
+      await deleteNextWatched(datas_id);
     }
     window.location.reload();
   };
 
-  const title = (id: number) => {
+  const reduce_title = (id: number) => {
     const wordCount = 21;
     const titleCount = datas[id].title.length;
     const clamp = "...";
     let title = datas[id].title;
+
     if (titleCount > wordCount) {
       var str = datas[id].title;
       str = str.substr(0, wordCount - 1);
       title = str + clamp;
     }
+  
     return title;
   };
 
@@ -110,12 +103,13 @@ export const WatchedRow = ({ datas, detailurl }: Props) => {
                   />
                   <CardContent>
                     <Typography
-                      className={classes.cardtext}
                       gutterBottom
                       variant="subtitle1"
                       component="div"
+                      sx = {{width: 140,
+                         height: 30,}}
                     >
-                      {title(id)}
+                      {reduce_title(id)}
                     </Typography>
                   </CardContent>
                   <CardContent sx={{ paddingTop: 0 }}>
@@ -130,7 +124,7 @@ export const WatchedRow = ({ datas, detailurl }: Props) => {
                     </Stack>
                   </CardContent>
                 </CardActionArea>
-                  <div className={classes.cardbutton}>
+                  <div style={cardbutton}>
                     <Button
                       onClick={() => getMovideDetail(id)}
                       variant="contained"

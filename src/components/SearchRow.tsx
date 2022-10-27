@@ -5,38 +5,23 @@ import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
+import Rating from "@mui/material/Rating";
+import Stack from "@mui/material/Stack";
 import { useNavigate } from "react-router-dom";
 import { tmdb_api } from "../service/api";
 import { requests } from "../service/request";
-import Rating from "@mui/material/Rating";
-import Stack from "@mui/material/Stack";
-import { makeStyles } from "@material-ui/core/styles";
 
 
 type Props = {
   datas: any;
-  check: boolean;
 };
-
-const useStyles = makeStyles((theme) => ({
-  cardcontents: {
-    paddingTop: "0px",
-  },
-  cardtext: {
-    width: 140,
-    height: 30,
-  },
-}));
 
 const base_url: string = "https://image.tmdb.org/t/p/w185/";
 
-export const SearchRow = ({ datas, check }: Props) => {
+export const SearchRow = ({ datas}: Props) => {
   const fetchUrlOverview = requests.feactOverview;
   const fetchUrlCast = requests.feactCredit;
-  // let urlEdit = "";
-
   const navigate = useNavigate();
-  const classes = useStyles();
 
   const title = (i: number) => {
     const wordCount = 21;
@@ -51,7 +36,7 @@ export const SearchRow = ({ datas, check }: Props) => {
     return title;
   };
 
-  const SubmitItem = async (i: any,editUrl:string) => {
+  const SubmitItem = async (i: any, editUrl: string) => {
     const data_id = datas[i]?.id;
     const requestoverview = await tmdb_api.get(
       `/movie/${data_id}?${fetchUrlOverview}`
@@ -68,11 +53,15 @@ export const SearchRow = ({ datas, check }: Props) => {
       array[i] = credits_data.cast[i].name;
     }
     const cast = array.join();
-    if(editUrl ===  "editmovie"){
-      navigate("/searchmovie/editmovie", { state: { dataItem, overview, cast, editUrl } });
+    if (editUrl === "editmovie") {
+      navigate("/searchmovie/editmovie", {
+        state: { dataItem, overview, cast, editUrl },
+      });
     }
-     if(editUrl ===  "editnextmovie"){
-      navigate("/searchmovie/editnextmovie", {state: { dataItem, overview, cast,editUrl }});
+    if (editUrl === "editnextmovie") {
+      navigate("/searchmovie/editnextmovie", {
+        state: { dataItem, overview, cast, editUrl },
+      });
     }
   };
 
@@ -98,7 +87,7 @@ export const SearchRow = ({ datas, check }: Props) => {
                   />
                   <CardContent>
                     <Typography
-                      className={classes.cardtext}
+                      sx={{ paddingTop: "0px" }}
                       gutterBottom
                       variant="subtitle1"
                       component="div"
@@ -127,7 +116,7 @@ export const SearchRow = ({ datas, check }: Props) => {
                     variant="contained"
                     color="primary"
                     sx={{ marginBottom: "3px" }}
-                    onClick={() => SubmitItem(i,"editmovie")}
+                    onClick={() => SubmitItem(i, "editmovie")}
                   >
                     既に観た登録
                   </Button>
@@ -135,7 +124,7 @@ export const SearchRow = ({ datas, check }: Props) => {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => SubmitItem(i,"editnextmovie")}
+                    onClick={() => SubmitItem(i, "editnextmovie")}
                   >
                     次観たい登録
                   </Button>

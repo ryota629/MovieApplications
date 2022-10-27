@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { getWatched } from "../service/api";
-import { getNextWatched } from "../service/api";
+import { getWatched,getNextWatched } from "../service/api";
 import { WatchedRow } from "./WatchedRow";
 
 type Movied = {
@@ -23,6 +22,7 @@ const WatchedList = ( {watchListUrl}:Props ) => {
 
   useEffect(() => {
     getWatchedDetails();
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
 
   const getWatchedDetails = async () => {

@@ -3,19 +3,20 @@ import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import TableBody from "@mui/material/TableBody";
 import Paper from "@mui/material/Paper";
-import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
 import CardMedia from "@mui/material/CardMedia";
+import Button from "@mui/material/Button";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
-import Button from "@mui/material/Button";
-import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { PutMovied } from "../service/api";
-import { PutNextMovied } from "../service/api";
+import { format } from "date-fns";
+import { ja } from "date-fns/locale";
+import { useState } from "react";
+import { PostMovied } from "../service/api";
+import { PostNextMovied } from "../service/api";
 
 //css style
 const PaperMain = styled(Paper)`
@@ -25,9 +26,15 @@ const PaperMain = styled(Paper)`
   overflow-x: auto;
 `;
 
+const RegButton: { [key: string]: string } = {
+  textAlign: "center",
+  margin: "20px auto",
+  paddingBottom: "20px",
+};
+
 const RatingField: { [key: string]: any } = {
   width: "100%",
-  height: 48,
+  height: "48px",
   border: "solid",
   borderRadius: "5px",
   borderWidth: "thin",
@@ -39,7 +46,7 @@ const RatingField: { [key: string]: any } = {
   },
 };
 
-const RatingLable: { [key: string]: any } = {
+const RatingLable: { [key: string]: string } = {
   background: "#fff",
   padding: "3px 10px",
   color: "#666666",
@@ -48,49 +55,56 @@ const RatingLable: { [key: string]: any } = {
   left: "5px",
 };
 
-const RatingIcon: { [key: string]: any } = {
+const RatingIcon: { [key: string]: string } = {
   textAlign: "center",
   padding: "15px 10px",
 };
 
-const buttons: { [key: string]: any } = {
-  textAlign: "center",
-  margin: "20px auto",
-  paddingBottom: "10px",
-};
-
-const EditWatched = () => {
+const EditWatch= () => {
+  const base_url = "https://image.tmdb.org/t/p/w185/";
   const location = useLocation();
   const navigate = useNavigate();
-  const movie = location.state.moviereg;
-  const moviedUrl = location.state.moviedlUrl;
+  const movie = location.state.dataItem;
+  const overview = location.state.overview;
+  const casts = location.state.cast;
+  const editUrl = location.state.editUrl;
+  const today = new Date();
+  const today_year = format(today, "yyyy-M-d", {
+    locale: ja,
+  });
 
   const initialValues = {
-    id: movie.id,
     title: movie.title,
-    detail: movie.detail,
-    releasedate: movie.releasedate,
-    review: movie.review,
-    cast: movie.cast,
-    createdate: movie.createdate,
-    comment: movie.comment,
-    image: movie.image,
+    detail: overview,
+    releasedate: movie.release_date,
+    review: movie.vote_average / 2,
+    cast: casts,
+    createdate: today_year,
+    comment: "",
+    image: base_url + movie.poster_path,
   };
 
-  const [moviedreg, setMovieReg] = useState(initialValues);
+  const [watchedEdit, setWatchedEdit] = useState(initialValues);
+
+  // 空の配列の場合は空文字に代入
+  if (Array.isArray(movie.overview)) {
+    watchedEdit.cast = "";
+  }
+
+  if (Array.isArray(movie.credits)) {
+    watchedEdit.cast = "";
+  }
 
   const onValueChange = (e: any) => {
-    setMovieReg({ ...moviedreg, [e.target.name]: e.target.value });
+    setWatchedEdit({ ...watchedEdit, [e.target.name]: e.target.value });
   };
 
   const onSubmit = async () => {
-    if (moviedUrl === "watchedlist") {
-      await PutMovied(moviedreg, moviedreg.id);
+    if (editUrl === "editmovie") {
+      await PostMovied(watchedEdit);
       navigate("/watchedlist");
-    }
-
-    if (moviedUrl === "nextwatchedlist") {
-      await PutNextMovied(moviedreg, moviedreg.id);
+    } else {
+      await PostNextMovied(watchedEdit);
       navigate("/nextwatchedlist");
     }
   };
@@ -98,20 +112,21 @@ const EditWatched = () => {
   return (
     <div>
       <h1 style={{ textAlign: "center" }}>
-        {moviedUrl === "watchedlist" ? "観た映画一覧編集" : "次観たい一覧編集"}
+        {editUrl === "editmovie" ? "観た映画一覧登録" : "次観た映画一覧登録"}
       </h1>
+      {/* Material UI stylesを使用(Paper=>PaperMain)*/}
       <PaperMain>
-        <Table>
+        <Table sx={{ minWidth: 650 }}>
           <TableBody>
             <TableRow>
-              <TableCell sx={{ width: 300 }}>
+              <TableCell sx={{ width: 230, height: 10 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={6} md={8}>
-                    <Card sx={{ width: 290, height: 480 }}>
+                    <Card sx={{ width: 230, height: 350 }}>
                       <CardMedia
                         component="img"
                         height="100%"
-                        image={movie.image}
+                        image={base_url + movie.poster_path}
                         alt=""
                       />
                     </Card>
@@ -138,7 +153,7 @@ const EditWatched = () => {
                   fullWidth
                   multiline
                   rows="6"
-                  defaultValue={movie.detail}
+                  defaultValue={overview}
                 />
 
                 <TextField
@@ -148,7 +163,7 @@ const EditWatched = () => {
                   margin="normal"
                   onChange={(e) => onValueChange(e)}
                   name="releasedate"
-                  defaultValue={movie.releasedate}
+                  defaultValue={movie.release_date}
                 />
 
                 <div style={RatingField}>
@@ -158,7 +173,7 @@ const EditWatched = () => {
                       <Rating
                         name="review"
                         onChange={(e) => onValueChange(e)}
-                        defaultValue={movie.review}
+                        defaultValue={movie.vote_average / 2}
                         precision={0.5}
                       />
                     </Stack>
@@ -172,7 +187,9 @@ const EditWatched = () => {
                   margin="normal"
                   onChange={(e) => onValueChange(e)}
                   name="cast"
-                  defaultValue={movie.cast}
+                  multiline
+                  rows="2"
+                  defaultValue={casts}
                 />
 
                 <TextField
@@ -182,13 +199,12 @@ const EditWatched = () => {
                   margin="normal"
                   onChange={(e) => onValueChange(e)}
                   name="time"
-                  defaultValue={movie.createdate}
+                  defaultValue={today_year}
                 />
 
                 <TextField
                   label="コメント"
                   type="text"
-                  defaultValue={movie.comment}
                   fullWidth
                   multiline
                   rows="6"
@@ -201,7 +217,7 @@ const EditWatched = () => {
           </TableBody>
         </Table>
       </PaperMain>
-      <div style={buttons}>
+      <div style={RegButton}>
         <Button variant="contained" size="small" onClick={() => onSubmit()}>
           登録する
         </Button>
@@ -210,4 +226,4 @@ const EditWatched = () => {
   );
 };
 
-export default EditWatched;
+export default EditWatch;

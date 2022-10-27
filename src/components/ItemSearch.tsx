@@ -1,4 +1,5 @@
-import { TextField, Button } from "@material-ui/core";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 
 type Props = {
@@ -30,7 +31,7 @@ const ItemSearch = (props: Props) => {
         ></TextField>
         <br />
         <Button variant="outlined" onClick={() => props.handleSubmit()}>
-          Submit
+          検索
         </Button>
       </Box>
     </div>

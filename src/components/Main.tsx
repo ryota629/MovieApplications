@@ -3,9 +3,9 @@ import { requests } from "../service/request";
 import SearchMovie from "./SearchMovie";
 import WatchedList from "./WatchedList";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import EditMovied from "./EditMovied";
-import MoviedDetail from "./MoviedDetail";
-import EditWatched from "./EditWatched";
+import EditWatch from "./EditWatch";
+import WatchDetail from "./WatchDetail";
+import EditDetailWatch from "./EditDetailWatch";
 
 function Main() {
   return (
@@ -16,13 +16,13 @@ function Main() {
           <Route path="/" element={<WatchedList watchListUrl="watchedlist"/>} />
           <Route path="/watchedlist" element={<WatchedList watchListUrl="watchedlist"/>} />
           {/* 観たい映画編集画面(検索用) */}
-          <Route path="/searchmovie/editmovie" element={<EditMovied />} />
+          <Route path="/searchmovie/editmovie" element={<EditWatch />} />
           {/* 観たい映画詳細画面 */}
-          <Route path="/watchedlist/moviedetail" element={<MoviedDetail />} />
+          <Route path="/watchedlist/moviedetail" element={<WatchDetail />} />
           {/*観たい映画編集画面(詳細用)  */}
           <Route
             path="/watchedlist/moviedetail/editwatched"
-            element={<EditWatched />}
+            element={<EditDetailWatch />}
           />
 
           {/* 次観たい映画リスト */}
@@ -30,17 +30,17 @@ function Main() {
           {/* 次観たい映画編集画面(検索用) */}
          <Route
            path="/searchmovie/editnextmovie"
-           element={<EditMovied />}
+           element={<EditWatch />}
          />
           {/* 次観たい映画詳細画面 */}
           <Route
             path="/nextwatchedlist/moviedetail"
-            element={<MoviedDetail />}
+            element={<WatchDetail />}
           />
           {/*次観たい映画編集画面(詳細用)  */}
           <Route
             path="/nextwatchedlist/moviedetail/editwatched"
-            element={<EditWatched />}
+            element={<EditDetailWatch />}
           />
 
           {/* 検索画面 */}
